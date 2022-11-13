@@ -136,7 +136,7 @@ GameObject:
   - component: {fileID: 169708069}
   - component: {fileID: 169708068}
   m_Layer: 0
-  m_Name: Canvas
+  m_Name: UI Fields
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -159,7 +159,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 550.5, y: 257}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1101, y: 514}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &169708068
@@ -404,11 +404,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96f29e0b77dfdee419b6b7288d8ecf96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RowCount: 7
-  ColumnCount: 7
+  height: 9
+  width: 9
   MineCount: 15
-  prefab: {fileID: 3750064476506789245, guid: 89c94bfb202010c4b8c4a499e8a3332e, type: 3}
-  canvas: {fileID: 169708067}
+  prefab: {fileID: 2860685978303925930, guid: 89c94bfb202010c4b8c4a499e8a3332e, type: 3}
+  canvasParent: {fileID: 169708067}
 --- !u!4 &1385168613
 Transform:
   m_ObjectHideFlags: 0
