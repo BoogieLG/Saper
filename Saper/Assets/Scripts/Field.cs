@@ -1,37 +1,21 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class Field : MonoBehaviour
 {
-    public bool isMine;
-    //public int minesNear;
-
     public Text fieldValue;
     public GameObject buttton;
 
-    public void CheckForMine()
+    public FieldData fieldData;
+
+    public void OpenField()
     {
         buttton.SetActive(false);
-        if (isMine)
-        {
-            Debug.Log("Game Over");
-        }
-
-
     }
-
-
-    public void SetValue(int index)
+    public void SetMineInfo()
     {
-        if(index == 9)
-        {
-            fieldValue.text = "X";
-            return;
-        }
-        //imageValue.sprite = images[index];
-        //minesNear = index;
-        fieldValue.text = index.ToString();
+        if (fieldData.isMine) fieldValue.text = "X";
+
+        else fieldValue.text = fieldData.GetNeigboursMineCount().ToString();
     }
 }
