@@ -6,11 +6,11 @@ public class MapOfFields : MonoBehaviour
     public int height;
     public int width;
     public int MineCount;
-    public Field prefab;
+    public FieldUI prefab;
     public Transform canvasParent;
 
     int minesLeft;
-    Field[] fields;
+    FieldUI[] fields;
 
     Camera mainCamera;
 
@@ -28,7 +28,7 @@ public class MapOfFields : MonoBehaviour
 
     void SetMapParameters()
     {
-        fields = new Field[height * width];
+        fields = new FieldUI[height * width];
         minesLeft = MineCount;
         if (minesLeft >= height * width) minesLeft = height * width - 1;
 
@@ -48,7 +48,7 @@ public class MapOfFields : MonoBehaviour
     void CreateField(int x, int y, int i)
     {
         Vector2 pos = new Vector2(x, y);
-        fields[i] = Instantiate<Field>(prefab, pos, Quaternion.identity, canvasParent);
+        fields[i] = Instantiate<FieldUI>(prefab, pos, Quaternion.identity, canvasParent);
     }
     void SetCameraParameters()
     {
@@ -87,7 +87,7 @@ public class MapOfFields : MonoBehaviour
                 minesLeft--;
             }
         }
-        foreach(Field field in fields)
+        foreach(FieldUI field in fields)
         {
             field.SetMineInfo();
         }
