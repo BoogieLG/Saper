@@ -17,6 +17,8 @@ public class MapOfFields : MonoBehaviour
     private void Awake()
     {
         mainCamera = Camera.main;
+
+        EventManager.instance.gameOver += GameOver;
     }
     void Start()
     {
@@ -58,7 +60,7 @@ public class MapOfFields : MonoBehaviour
 
     void SetFieldData(int x, int y, int i)
     {
-        FieldData data = fields[i].fieldData = new FieldData(x, y);
+        FieldData data = fields[i].fieldData = new FieldData(x, y, fields[i]);
         if (x > 0)
         {
             data.SetNeigbour(FieldDirection.West, fields[i - 1].fieldData);
@@ -87,9 +89,19 @@ public class MapOfFields : MonoBehaviour
                 minesLeft--;
             }
         }
-        foreach(FieldUI field in fields)
+        foreach(FieldUI fieldUI in fields)
         {
-            field.SetMineInfo();
+            fieldUI.SetMineInfo();
+        }
+    }
+    void GameOver()
+    {
+        foreach(FieldUI fieldUI in fields)
+        {
+            if (fieldUI.fieldData.isMine)
+            {
+                fieldUI.GameOverOpening();
+            }
         }
     }
 }

@@ -19,6 +19,7 @@ public class FieldUI : MonoBehaviour, IPointerClickHandler
     public void OpenField()
     {
         buttton.SetActive(false);
+        CheckFieldStatus();
     }
     public void SwitchFlagStatus()
     {
@@ -28,7 +29,20 @@ public class FieldUI : MonoBehaviour, IPointerClickHandler
     public void SetMineInfo()
     {
         if (fieldData.isMine) fieldValue.text = "X";
+        else
+        {
+            int mineCount = fieldData.GetNeigboursMineCount();
+            if (mineCount > 0) fieldValue.text = mineCount.ToString();
+        }
+    }
+    void CheckFieldStatus()
+    {
+        if (fieldData.isMine) EventManager.instance.GameOver();
+        else if (fieldData.minesNearField == 0) fieldData.CheckNeignboursField();
+    }
 
-        else fieldValue.text = fieldData.GetNeigboursMineCount().ToString();
+    public void GameOverOpening()
+    {
+        buttton.SetActive(false);
     }
 }
