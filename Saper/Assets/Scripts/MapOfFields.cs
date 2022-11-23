@@ -1,5 +1,5 @@
-using UnityEditor.UIElements;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MapOfFields : MonoBehaviour
 {
@@ -18,14 +18,16 @@ public class MapOfFields : MonoBehaviour
     {
         mainCamera = Camera.main;
 
-        EventManager.instance.gameOver += GameOver;
+
     }
     void Start()
     {
+        EventManager.instance.gameOver += GameOver;
+        EventManager.instance.firstFieldOpened += GenerateMines;
         SetMapParameters();
         SetCameraParameters();
         makeMapOfFields();
-        GenerateMines();
+
     }
 
     void SetMapParameters()
@@ -37,6 +39,7 @@ public class MapOfFields : MonoBehaviour
     }
     void makeMapOfFields()
     {
+        FieldUI.graphicRaycaster = canvasParent.gameObject.AddComponent<GraphicRaycaster>();
         for (int y = 0, i = 0; y < height; y++)
         {
             for (int x = 0; x < width; x++)
@@ -50,6 +53,7 @@ public class MapOfFields : MonoBehaviour
     void CreateField(int x, int y, int i)
     {
         Vector2 pos = new Vector2(x, y);
+
         fields[i] = Instantiate<FieldUI>(prefab, pos, Quaternion.identity, canvasParent);
     }
     void SetCameraParameters()
@@ -78,30 +82,48 @@ public class MapOfFields : MonoBehaviour
             }
         }
     }
-    void GenerateMines()
+    void GenerateMines(FieldUI skipField)
     {
+
         while (minesLeft > 0)
         {
-            int rand = Random.Range(0, height*width);
-            if (!fields[rand].fieldData.isMine)
+            int rand = Random.Range(0, height * width);
+
+            if (!fields[rand].fieldData.isMine )
             {
-                fields[rand].fieldData.isMine = true;
-                minesLeft--;
+                if (fields[rand] != skipField)
+                {
+                    fields[rand].fieldData.isMine = true;
+                    minesLeft--;
+                }
+
             }
         }
-        foreach(FieldUI fieldUI in fields)
+        foreach (FieldUI fieldUI in fields)
         {
             fieldUI.SetMineInfo();
         }
     }
     void GameOver()
     {
-        foreach(FieldUI fieldUI in fields)
+        foreach (FieldUI fieldUI in fields)
         {
             if (fieldUI.fieldData.isMine)
             {
                 fieldUI.GameOverOpening();
             }
         }
+    }
+    [ContextMenu("Restart")]
+    void Restart()
+    {
+        EventManager.instance.RestartTheGame();
+        FieldUI.graphicRaycaster.enabled = true;
+        foreach(var data in fields)
+        {
+            data.fieldData.isMine = false;
+            data.fieldData.minesNearField = 0;
+        }
+        minesLeft = MineCount;
     }
 }

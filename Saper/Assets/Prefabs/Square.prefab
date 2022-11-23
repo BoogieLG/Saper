@@ -293,8 +293,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 2860685978303925930}
-        m_TargetAssemblyTypeName: Field, Assembly-CSharp
-        m_MethodName: OpenField
+        m_TargetAssemblyTypeName: FieldUI, Assembly-CSharp
+        m_MethodName: FirstFieldOpening
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -407,6 +407,12 @@ MonoBehaviour:
   fieldValue: {fileID: 7729552057435605921}
   buttton: {fileID: 3624155530441607996}
   flag: {fileID: 1382285648638430969}
+  fieldData:
+    fieldUI: {fileID: 0}
+    isMine: 0
+    minesNearField: 0
+    xPos: 0
+    yPos: 0
 --- !u!61 &396059211201009734
 BoxCollider2D:
   m_ObjectHideFlags: 0
