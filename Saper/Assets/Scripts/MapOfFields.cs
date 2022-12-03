@@ -8,22 +8,19 @@ public class MapOfFields : MonoBehaviour
     public int MineCount;
     public FieldUI prefab;
     public Transform canvasParent;
-
     int minesLeft;
     FieldUI[] fields;
-
+    public EventManager eventManager;
     Camera mainCamera;
 
     private void Awake()
     {
-        mainCamera = Camera.main;
-
-
+        mainCamera = Camera.main;        
     }
     void Start()
     {
-        EventManager.instance.gameOver += GameOver;
-        EventManager.instance.firstFieldOpened += GenerateMines;
+        eventManager.gameOver += GameOver;
+        eventManager.firstFieldOpened += GenerateMines;
         SetMapParameters();
         SetCameraParameters();
         makeMapOfFields();
@@ -55,6 +52,7 @@ public class MapOfFields : MonoBehaviour
         Vector2 pos = new Vector2(x, y);
 
         fields[i] = Instantiate<FieldUI>(prefab, pos, Quaternion.identity, canvasParent);
+        fields[i].Init(eventManager);
     }
     void SetCameraParameters()
     {
@@ -63,24 +61,30 @@ public class MapOfFields : MonoBehaviour
     }
 
     void SetFieldData(int x, int y, int i)
-    {
-        FieldData data = fields[i].fieldData = new FieldData(x, y, fields[i]);
+    {   
+        fields[i].fieldData = new FieldData(x, y);
+
         if (x > 0)
         {
-            data.SetNeigbour(FieldDirection.West, fields[i - 1].fieldData);
+            SetNeigbours(fields[i], fields[i - 1], FieldDirection.West);
         }
         if (y > 0)
         {
-            data.SetNeigbour(FieldDirection.South, fields[i - width].fieldData);
+            SetNeigbours(fields[i], fields[i - width], FieldDirection.South);
             if (x > 0)
             {
-                data.SetNeigbour(FieldDirection.WestSouth, fields[i - width - 1].fieldData);
+                SetNeigbours(fields[i], fields[i - width - 1], FieldDirection.WestSouth);
             }
             if (x < width - 1)
             {
-                data.SetNeigbour(FieldDirection.EastSouth, fields[i - width + 1].fieldData);
+                SetNeigbours(fields[i], fields[i - width + 1], FieldDirection.EastSouth);
             }
         }
+    }
+    void SetNeigbours(FieldUI currentFieldData, FieldUI neigbour, FieldDirection neigbourDirection)
+    {
+        currentFieldData.neigbours[neigbourDirection] = neigbour;
+        neigbour.neigbours[neigbourDirection.Opposite()] = currentFieldData;
     }
     void GenerateMines(FieldUI skipField)
     {
@@ -117,7 +121,7 @@ public class MapOfFields : MonoBehaviour
     [ContextMenu("Restart")]
     void Restart()
     {
-        EventManager.instance.RestartTheGame();
+        eventManager.RestartTheGame();
         FieldUI.graphicRaycaster.enabled = true;
         foreach(var data in fields)
         {

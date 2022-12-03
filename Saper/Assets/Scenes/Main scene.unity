@@ -440,6 +440,7 @@ MonoBehaviour:
   MineCount: 15
   prefab: {fileID: 2860685978303925930, guid: 89c94bfb202010c4b8c4a499e8a3332e, type: 3}
   canvasParent: {fileID: 169708067}
+  eventManager: {fileID: 1949754618}
 --- !u!4 &1385168613
 Transform:
   m_ObjectHideFlags: 0
