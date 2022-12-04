@@ -408,7 +408,6 @@ MonoBehaviour:
   buttton: {fileID: 3624155530441607996}
   flag: {fileID: 1382285648638430969}
   fieldData:
-    fieldUI: {fileID: 0}
     isMine: 0
     minesNearField: 0
     xPos: 0

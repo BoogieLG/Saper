@@ -13,12 +13,10 @@ public class MapOfFields : MonoBehaviour
     public EventManager eventManager;
     Camera mainCamera;
 
-    private void Awake()
+    public void Init(EventManager eventManager, Camera mainCamera)
     {
-        mainCamera = Camera.main;        
-    }
-    void Start()
-    {
+        this.mainCamera = mainCamera;
+        this.eventManager = eventManager;
         eventManager.gameOver += GameOver;
         eventManager.firstFieldOpened += GenerateMines;
         SetMapParameters();
@@ -31,7 +29,7 @@ public class MapOfFields : MonoBehaviour
     {
         fields = new FieldUI[height * width];
         minesLeft = MineCount;
-        if (minesLeft >= height * width) minesLeft = height * width - 1;
+        if (minesLeft >= height * width) minesLeft = height * width / 2;
 
     }
     void makeMapOfFields()
@@ -52,7 +50,8 @@ public class MapOfFields : MonoBehaviour
         Vector2 pos = new Vector2(x, y);
 
         fields[i] = Instantiate<FieldUI>(prefab, pos, Quaternion.identity, canvasParent);
-        fields[i].Init(eventManager);
+        FieldData data = new FieldData();
+        fields[i].Init(eventManager, data, new NeigbourComponent(data));
     }
     void SetCameraParameters()
     {
@@ -61,9 +60,7 @@ public class MapOfFields : MonoBehaviour
     }
 
     void SetFieldData(int x, int y, int i)
-    {   
-        fields[i].fieldData = new FieldData(x, y);
-
+    {
         if (x > 0)
         {
             SetNeigbours(fields[i], fields[i - 1], FieldDirection.West);
@@ -83,8 +80,8 @@ public class MapOfFields : MonoBehaviour
     }
     void SetNeigbours(FieldUI currentFieldData, FieldUI neigbour, FieldDirection neigbourDirection)
     {
-        currentFieldData.neigbours[neigbourDirection] = neigbour;
-        neigbour.neigbours[neigbourDirection.Opposite()] = currentFieldData;
+        currentFieldData.neigbourComponent.SetNeigbours(neigbourDirection, neigbour);
+        neigbour.neigbourComponent.SetNeigbours(neigbourDirection.Opposite(), currentFieldData);
     }
     void GenerateMines(FieldUI skipField)
     {
@@ -93,7 +90,7 @@ public class MapOfFields : MonoBehaviour
         {
             int rand = Random.Range(0, height * width);
 
-            if (!fields[rand].fieldData.isMine )
+            if (!fields[rand].fieldData.isMine)
             {
                 if (fields[rand] != skipField)
                 {
@@ -123,7 +120,7 @@ public class MapOfFields : MonoBehaviour
     {
         eventManager.RestartTheGame();
         FieldUI.graphicRaycaster.enabled = true;
-        foreach(var data in fields)
+        foreach (var data in fields)
         {
             data.fieldData.isMine = false;
             data.fieldData.minesNearField = 0;

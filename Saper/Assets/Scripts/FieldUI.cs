@@ -11,37 +11,17 @@ public class FieldUI : MonoBehaviour, IPointerClickHandler
     public FieldData fieldData;
     public static GraphicRaycaster graphicRaycaster;
     bool isFlagged;
-    public Dictionary<FieldDirection, FieldUI> neigbours;
+    public NeigbourComponent neigbourComponent;
+
     EventManager eventManager;
-    public FieldUI()
-    {
-        neigbours = new Dictionary<FieldDirection, FieldUI>();
-    }
-    public void Init(EventManager manager)
+    public void Init(EventManager manager, FieldData fieldData, NeigbourComponent neigbourComponent)
     {
         eventManager = manager;
         eventManager.restartGame += ResetData;
+        this.fieldData = fieldData;
+        this.neigbourComponent = neigbourComponent;
     }
-    public int GetNeigboursMineCount()
-    {
-        fieldData.minesNearField = 0;
-        for (int i = 0; i < 8; i++)
-        {
-            if (neigbours.ContainsKey((FieldDirection)i))
-            {
-                fieldData.minesNearField += neigbours[(FieldDirection)i].fieldData.isMine ? 1 : 0;
-            }
-        }
-        return fieldData.minesNearField;
-    }
-    public void CheckNeignboursField()
-    {
-        if (fieldData.minesNearField != 0) return;
-        foreach (FieldUI neigbour in neigbours.Values)
-        {
-            if (neigbour.buttton.activeInHierarchy) neigbour.OpenField(); 
-        }
-    }
+
     public void OnPointerClick(PointerEventData eventData)
     {
         if (eventData.button == PointerEventData.InputButton.Left)
@@ -72,7 +52,7 @@ public class FieldUI : MonoBehaviour, IPointerClickHandler
         }
         else
         {
-            int mineCount = GetNeigboursMineCount();
+            int mineCount = neigbourComponent.GetNeigboursMineCount();
             if (mineCount > 0)
             {
                 fieldValue.text = mineCount.ToString();
@@ -93,11 +73,12 @@ public class FieldUI : MonoBehaviour, IPointerClickHandler
     void ResetData()
     {
         buttton.SetActive(true);
+        flag.SetActive(false);
     }
     void CheckFieldStatus()
     {
         if (fieldData.isMine) eventManager.GameOver();
-        else if (fieldData.minesNearField == 0) CheckNeignboursField();
+        else if (fieldData.minesNearField == 0) neigbourComponent.CheckNeignboursField();
     }
     private void OnDestroy()
     {
