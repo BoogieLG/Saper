@@ -8,7 +8,8 @@ public class EventManager : MonoBehaviour
     public Action gameOver;
     public Action<FieldUI> firstFieldOpened;
     public Action restartGame;
-
+    public Action openedField;
+    public Action victory;
     public void GameOver()
     {
         gameOver?.Invoke();
@@ -20,5 +21,13 @@ public class EventManager : MonoBehaviour
     public void RestartTheGame()
     {
         restartGame?.Invoke();
+    }
+    public void OpenedField()
+    {
+        openedField?.Invoke();
+    }
+    public void Victory()
+    {
+        victory?.Invoke();
     }
 }

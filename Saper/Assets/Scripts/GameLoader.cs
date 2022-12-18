@@ -11,8 +11,10 @@ class GameLoader : MonoBehaviour
     public Camera mainCamera;
     public EventManager eventManager;
     public MapOfFields mapOfFields;
+    public UIManager uiManager;
     void Awake()
     {
         mapOfFields.Init(eventManager, mainCamera);
+        uiManager.Init(eventManager, mapOfFields);
     }
 }

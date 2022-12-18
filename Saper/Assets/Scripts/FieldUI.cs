@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -36,6 +35,10 @@ public class FieldUI : MonoBehaviour, IPointerClickHandler
 
     public void OpenField()
     {
+        if (!buttton.activeInHierarchy)
+        {
+            return;
+        }
         buttton.SetActive(false);
         CheckFieldStatus();
     }
@@ -77,8 +80,16 @@ public class FieldUI : MonoBehaviour, IPointerClickHandler
     }
     void CheckFieldStatus()
     {
-        if (fieldData.isMine) eventManager.GameOver();
-        else if (fieldData.minesNearField == 0) neigbourComponent.CheckNeignboursField();
+        if (fieldData.isMine)
+        {
+            eventManager.GameOver();
+            return;
+        }
+        else if (fieldData.minesNearField == 0)
+        {
+            neigbourComponent.CheckNeignboursField();
+        }
+        eventManager.openedField();
     }
     private void OnDestroy()
     {

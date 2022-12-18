@@ -1,10 +1,12 @@
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class MapOfFields : MonoBehaviour
 {
-    public int height;
-    public int width;
+    [Range(7, 15)]
+    public int mapSize;
     public int MineCount;
     public FieldUI prefab;
     public Transform canvasParent;
@@ -13,31 +15,47 @@ public class MapOfFields : MonoBehaviour
     public EventManager eventManager;
     Camera mainCamera;
 
+    [SerializeField]int fieldsLeft;
     public void Init(EventManager eventManager, Camera mainCamera)
     {
         this.mainCamera = mainCamera;
         this.eventManager = eventManager;
         eventManager.gameOver += GameOver;
         eventManager.firstFieldOpened += GenerateMines;
+        eventManager.openedField += OpenedField;
+    }
+    public void StartGame()
+    {
         SetMapParameters();
         SetCameraParameters();
         makeMapOfFields();
-
+        fieldsLeft = mapSize * mapSize;
     }
-
+    void OpenedField()
+    {
+        fieldsLeft--;
+        if(fieldsLeft == MineCount)
+        {
+            eventManager.Victory();
+        }
+    }
     void SetMapParameters()
     {
-        fields = new FieldUI[height * width];
+        fields = new FieldUI[mapSize * mapSize];
         minesLeft = MineCount;
-        if (minesLeft >= height * width) minesLeft = height * width / 2;
+        if (minesLeft >= mapSize * mapSize)
+        {
+            minesLeft = mapSize * mapSize / 2;
+        }
 
     }
+
     void makeMapOfFields()
     {
         FieldUI.graphicRaycaster = canvasParent.gameObject.AddComponent<GraphicRaycaster>();
-        for (int y = 0, i = 0; y < height; y++)
+        for (int y = 0, i = 0; y < mapSize; y++)
         {
-            for (int x = 0; x < width; x++)
+            for (int x = 0; x < mapSize; x++)
             {
                 CreateField(x, y, i);
                 SetFieldData(x, y, i);
@@ -55,8 +73,9 @@ public class MapOfFields : MonoBehaviour
     }
     void SetCameraParameters()
     {
-        Vector3 cameraPos = new Vector3((float)height / 2 - 0.5f, (float)width / 2 - 0.5f, -10f);
+        Vector3 cameraPos = new Vector3((float)mapSize / 2 - 0.5f, (float)mapSize / 2 - 0.5f, -10f);
         mainCamera.transform.position = cameraPos;
+        mainCamera.orthographicSize = (int)mapSize / 2 + 1;
     }
 
     void SetFieldData(int x, int y, int i)
@@ -67,14 +86,14 @@ public class MapOfFields : MonoBehaviour
         }
         if (y > 0)
         {
-            SetNeigbours(fields[i], fields[i - width], FieldDirection.South);
+            SetNeigbours(fields[i], fields[i - mapSize], FieldDirection.South);
             if (x > 0)
             {
-                SetNeigbours(fields[i], fields[i - width - 1], FieldDirection.WestSouth);
+                SetNeigbours(fields[i], fields[i - mapSize - 1], FieldDirection.WestSouth);
             }
-            if (x < width - 1)
+            if (x < mapSize - 1)
             {
-                SetNeigbours(fields[i], fields[i - width + 1], FieldDirection.EastSouth);
+                SetNeigbours(fields[i], fields[i - mapSize + 1], FieldDirection.EastSouth);
             }
         }
     }
@@ -88,7 +107,7 @@ public class MapOfFields : MonoBehaviour
 
         while (minesLeft > 0)
         {
-            int rand = Random.Range(0, height * width);
+            int rand = Random.Range(0, mapSize * mapSize);
 
             if (!fields[rand].fieldData.isMine)
             {
@@ -115,9 +134,16 @@ public class MapOfFields : MonoBehaviour
             }
         }
     }
-    [ContextMenu("Restart")]
-    void Restart()
+    public void ClearField()
     {
+        foreach (FieldUI field in fields)
+        {
+            Destroy(field.gameObject);
+        }
+    }
+    public void Restart()
+    {
+        fieldsLeft = mapSize * mapSize;
         eventManager.RestartTheGame();
         FieldUI.graphicRaycaster.enabled = true;
         foreach (var data in fields)
